@@ -142,14 +142,32 @@ The application will be available at: **http://localhost:8501**
 - **Processing time tracking** for performance monitoring
 - **Model performance comparison** across different content
 
-## 🚨 Troubleshooting
+## 🔧 Troubleshooting
+
+### Application Won't Start
+```bash
+# Kill any existing processes
+pkill -f streamlit
+
+# Check dependencies
+pip install -r requirements.txt
+
+# Restart application
+cd /app && streamlit run app.py --server.port=8501
+```
+
+### Models Not Loading
+- First run takes longer (downloading models)
+- Ensure stable internet connection
+- Check available disk space (models ~1-2GB)
+
+### Port Already in Use
+```bash
+# Use different port
+streamlit run app.py --server.port=8502
+```
 
 ### Common Issues
-
-**Models not downloading:**
-- Ensure stable internet connection
-- First run may take longer for model downloads
-- Check available disk space (models can be 1-2GB each)
 
 **Memory issues:**
 - Use T5-small for faster processing on limited hardware
@@ -195,7 +213,7 @@ The application will be available at: **http://localhost:8501**
 - **Large files** (> 5000 words): 45-120 seconds
 
 *Times vary based on hardware and selected model*
-
+<!-- 
 ## 🤝 Contributing
 
 This is an application showcasing:
@@ -203,4 +221,4 @@ This is an application showcasing:
 - **Professional UI/UX** with Streamlit
 - **Robust File Processing** for multiple formats
 - **Export and History Management**
-- **Error Handling and Validation**
+- **Error Handling and Validation** -->
