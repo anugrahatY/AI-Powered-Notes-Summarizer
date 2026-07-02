@@ -1,3 +1,5 @@
+from src.auth import login, signup, logout
+from src.supabase_client import supabase
 import streamlit as st
 import os
 import json
@@ -23,7 +25,62 @@ def load_models():
     keyword_extractor = KeywordExtractor()
     return summarizer, keyword_extractor
 
+def login_screen():
+
+    st.title("AI Notes Summarizer")
+
+    choice = st.radio(
+        "",
+        ["Login","Register","Guest"]
+    )
+
+    email = ""
+    password = ""
+
+    if choice != "Guest":
+        email = st.text_input("Email")
+        password = st.text_input("Password",type="password")
+
+    if choice=="Login":
+
+        if st.button("Login"):
+
+            try:
+
+                session = login(email,password)
+
+                st.session_state.user = session.user
+
+                st.rerun()
+
+            except Exception as e:
+
+                st.error(e)
+
+    elif choice=="Register":
+
+        if st.button("Register"):
+
+            signup(email,password)
+
+            st.success("Account created.")
+
+    else:
+
+        if st.button("Continue as Guest"):
+
+            st.session_state.user=None
+
+            st.session_state.guest=True
+
+            st.rerun()
+
 def main():
+
+    if "user" not in st.session_state and "guest" not in st.session_state:
+        login_screen()
+        return
+
     st.set_page_config(
         page_title="AI-Powered Notes Summarizer",
         page_icon="📝",
@@ -159,6 +216,16 @@ def process_file(uploaded_file, file_processor, summarizer, keyword_extractor,
         
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
+
+        if "user" in st.session_state and st.session_state.user:
+            user = st.session_state.user
+
+            storage_path = f"{user.id}/{uploaded_file.name}"
+
+            supabase.storage.from_("summNotes").upload(
+                path=storage_path,
+                file=uploaded_file.getvalue()
+            )
         
         # Extract text
         extracted_text = file_processor.extract_text(file_path, uploaded_file.type)
@@ -196,6 +263,7 @@ def process_file(uploaded_file, file_processor, summarizer, keyword_extractor,
         
         # Save metadata
         save_metadata(result)
+        
         
         return result
         
@@ -356,8 +424,3 @@ def display_about():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
