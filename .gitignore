@@ -1,0 +1,7 @@
+uploads/
+exports/
+summaries/
+__pycache__/
+*.pyc
+.env
+.venv/
